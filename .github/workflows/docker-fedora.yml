@@ -2,7 +2,6 @@ name: docker-fedora
 
 on:
   push:
-    branches: [ main ]
   pull_request:
     branches: [ main ]
   workflow_dispatch:
