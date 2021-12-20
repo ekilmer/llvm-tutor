@@ -19,7 +19,7 @@ jobs:
           popd
       - name: Add Ninja to $PATH
         run: |
-          echo "${GITHUB_WORKSPACE}/ninja" >> $GITHUB_PATH
+          echo "${GITHUB_WORKSPACE}/ninja" >> ${GITHUB_PATH}
       - name: Clone llvm-project
         run: |
           git clone --depth 1 --single-branch --branch release/13.x https://github.com/llvm/llvm-project
@@ -40,11 +40,11 @@ jobs:
         run: |
           cd HelloWorld
           mkdir build && cd build
-          cmake -DLT_LLVM_INSTALL_DIR="$GITHUB_WORKSPACE/llvm-project/build" ../
+          cmake -DLLVM_DIR="${GITHUB_WORKSPACE}/llvm-project/build/lib/cmake/llvm" ../
           make -j2
       - name: Build llvm-tutor + run tests
         run: |
           mkdir build && cd build
-          cmake -DLT_LLVM_INSTALL_DIR="$GITHUB_WORKSPACE/llvm-project/build" ../
+          cmake -DLLVM_DIR="${GITHUB_WORKSPACE}/llvm-project/build/lib/cmake/llvm" ../
           make -j2
           lit test/

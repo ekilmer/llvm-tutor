@@ -19,14 +19,14 @@ jobs:
           popd
       - name: Add Ninja to $PATH
         run: |
-          echo "${GITHUB_WORKSPACE}/ninja" >> $GITHUB_PATH
+          echo "${GITHUB_WORKSPACE}/ninja" >> ${GITHUB_PATH}
       - name: Clone llvm-project
         run: |
           git clone --depth 1 --single-branch --branch release/13.x https://github.com/llvm/llvm-project
           cd llvm-project
       - name: Register MBAAdd statically
         run: |
-          bash utils/static_registration.sh --llvm_project_dir "$GITHUB_WORKSPACE/llvm-project"
+          bash utils/static_registration.sh --llvm_project_dir "${GITHUB_WORKSPACE}/llvm-project"
       - name: Build LLVM
         run: |
           cd llvm-project
@@ -45,7 +45,7 @@ jobs:
           sudo pip3 install lit
       - name: Run MBASub - sanity check
         run: |
-          $GITHUB_WORKSPACE/llvm-project/build/bin/opt -passes=mba-sub -S $GITHUB_WORKSPACE/test/MBA_sub.ll
+          ${GITHUB_WORKSPACE}/llvm-project/build/bin/opt -passes=mba-sub -S ${GITHUB_WORKSPACE}/test/MBA_sub.ll
       - name: Run MBASub tests
         run: |
-          $GITHUB_WORKSPACE/llvm-project/build/bin/llvm-lit $GITHUB_WORKSPACE/llvm-project/llvm/test/Examples/MBASub/
+          ${GITHUB_WORKSPACE}/llvm-project/build/bin/llvm-lit ${GITHUB_WORKSPACE}/llvm-project/llvm/test/Examples/MBASub/

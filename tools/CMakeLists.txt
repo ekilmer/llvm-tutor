@@ -3,14 +3,18 @@ add_executable(static
   ../lib/StaticCallCounter.cpp
 )
 
-target_link_libraries(static
+# Link to the required LLVM static libraries
+target_link_libraries(static PUBLIC
   LLVMCore
   LLVMPasses
   LLVMIRReader
   LLVMSupport
-  )
+)
 
-target_include_directories(
-  static
-  PRIVATE
-  "${CMAKE_CURRENT_SOURCE_DIR}/../include")
+# Setup the include directories
+target_include_directories(static PUBLIC
+  "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include>"
+)
+target_include_directories(static SYSTEM PUBLIC
+  "$<BUILD_INTERFACE:${LLVM_INCLUDE_DIRS}>"
+)

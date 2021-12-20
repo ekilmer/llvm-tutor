@@ -22,12 +22,12 @@ jobs:
         run: |
           cd HelloWorld
           mkdir build && cd build
-          cmake -DLT_LLVM_INSTALL_DIR="/usr/local/opt/llvm@13/"  ../
+          cmake -DLLVM_DIR="/usr/local/opt/llvm@13/lib/cmake/llvm"  ../
           make -j2
       - name: Build llvm-tutor + run tests
         run: |
-          cd $GITHUB_WORKSPACE
+          cd ${GITHUB_WORKSPACE}
           mkdir build && cd build
-          cmake -DLT_LLVM_INSTALL_DIR="/usr/local/opt/llvm@13/"  ../
+          cmake -DLLVM_DIR="/usr/local/opt/llvm@13/lib/cmake/llvm"  ../
           make -j2
           lit test/

@@ -1,52 +1,35 @@
 cmake_minimum_required(VERSION 3.13.4)
-project(llvm-tutor)
+project(llvm-tutor CXX)
+include(GNUInstallDirs)
 
-#===============================================================================
-# 1. VERIFY LLVM INSTALLATION DIR
-# This is just a bit of a sanity checking.
-#===============================================================================
-set(LT_LLVM_INSTALL_DIR "" CACHE PATH "LLVM installation directory")
-
-# 1.1 Check the "include| directory
-set(LT_LLVM_INCLUDE_DIR "${LT_LLVM_INSTALL_DIR}/include/llvm")
-if(NOT EXISTS "${LT_LLVM_INCLUDE_DIR}")
-message(FATAL_ERROR
-  " LT_LLVM_INSTALL_DIR (${LT_LLVM_INCLUDE_DIR}) is invalid.")
+# Global CMake Project configuration(s)
+# Require standard C++14, which is the same as LLVM
+if(NOT CMAKE_CXX_STANDARD)
+  set(CMAKE_CXX_STANDARD 14)
+  set(CMAKE_CXX_STANDARD_REQUIRED ON)
+  set(CMAKE_CXX_EXTENSIONS OFF)
+elseif(CMAKE_CXX_STANDARD LESS 14)
+  message(FATAL_ERROR "LLVM Tutor requires C++14 or newer")
 endif()
 
-# 1.2 Check that the LLVMConfig.cmake file exists (the location depends on the
-# OS)
-set(LT_VALID_INSTALLATION FALSE)
-
-# Ubuntu + Darwin
-if(EXISTS "${LT_LLVM_INSTALL_DIR}/lib/cmake/llvm/LLVMConfig.cmake")
-  set(LT_VALID_INSTALLATION TRUE)
+# Place all binary and library artifacts in a consistent location for lit testing
+if(NOT CMAKE_RUNTIME_OUTPUT_DIRECTORY)
+  set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_INSTALL_BINDIR})
 endif()
-
-# Fedora
-if(EXISTS "${LT_LLVM_INSTALL_DIR}/lib64/cmake/llvm/LLVMConfig.cmake")
-  set(LT_VALID_INSTALLATION TRUE)
+if(NOT CMAKE_LIBRARY_OUTPUT_DIRECTORY)
+  set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR})
 endif()
-
-if(NOT ${LT_VALID_INSTALLATION})
-  message(FATAL_ERROR
-    "LLVM installation directory, (${LT_LLVM_INSTALL_DIR}), is invalid. Couldn't
-    find LLVMConfig.cmake.")
+if(NOT CMAKE_ARCHIVE_OUTPUT_DIRECTORY)
+  set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR})
 endif()
 
 #===============================================================================
-# 2. LOAD LLVM CONFIGURATION
+# 1. LOAD LLVM CONFIGURATION
 #    For more: http://llvm.org/docs/CMake.html#embedding-llvm-in-your-project
 #===============================================================================
-# Add the location of LLVMConfig.cmake to CMake search paths (so that
-# find_package can locate it)
-# Note: On Fedora, when using the pre-compiled binaries installed with `dnf`,
-# LLVMConfig.cmake is located in "/usr/lib64/cmake/llvm". But this path is
-# among other paths that will be checked by default when using
-# `find_package(llvm)`. So there's no need to add it here.
-list(APPEND CMAKE_PREFIX_PATH "${LT_LLVM_INSTALL_DIR}/lib/cmake/llvm/")
-
-find_package(LLVM 13.0.0 REQUIRED CONFIG)
+# During CMake configuration, set 'LLVM_DIR' to the directory containing
+# LLVMConfig.cmake, so that find_package can locate it
+find_package(LLVM 13 REQUIRED CONFIG)
 
 # Another sanity check
 if(NOT "13" VERSION_EQUAL "${LLVM_VERSION_MAJOR}")
@@ -54,7 +37,7 @@ if(NOT "13" VERSION_EQUAL "${LLVM_VERSION_MAJOR}")
 endif()
 
 message(STATUS "Found LLVM ${LLVM_PACKAGE_VERSION}")
-message(STATUS "Using LLVMConfig.cmake in: ${LT_LLVM_INSTALL_DIR}")
+message(STATUS "Using LLVMConfig.cmake in: ${LLVM_CMAKE_DIR}")
 
 message("LLVM STATUS:
   Definitions ${LLVM_DEFINITIONS}
@@ -63,51 +46,52 @@ message("LLVM STATUS:
   Targets     ${LLVM_TARGETS_TO_BUILD}"
 )
 
-# Set the LLVM header and library paths
-include_directories(SYSTEM ${LLVM_INCLUDE_DIRS})
-link_directories(${LLVM_LIBRARY_DIRS})
-add_definitions(${LLVM_DEFINITIONS})
-
 #===============================================================================
-# 3. LLVM-TUTOR BUILD CONFIGURATION
-#===============================================================================
-# Use the same C++ standard as LLVM does
-set(CMAKE_CXX_STANDARD 14 CACHE STRING "")
-
-# Build type
-if (NOT CMAKE_BUILD_TYPE)
-  set(CMAKE_BUILD_TYPE Debug CACHE
-      STRING "Build type (default Debug):" FORCE)
-endif()
-
-# Compiler flags
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall\
-    -fdiagnostics-color=always")
-
-# LLVM is normally built without RTTI. Be consistent with that.
-if(NOT LLVM_ENABLE_RTTI)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-rtti")
-endif()
-
-# -fvisibility-inlines-hidden is set when building LLVM and on Darwin warnings
-# are triggered if llvm-tutor is built without this flag (though otherwise it
-# builds fine). For consistency, add it here too.
-include(CheckCXXCompilerFlag)
-check_cxx_compiler_flag("-fvisibility-inlines-hidden" SUPPORTS_FVISIBILITY_INLINES_HIDDEN_FLAG)
-if (${SUPPORTS_FVISIBILITY_INLINES_HIDDEN_FLAG} EQUAL "1")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fvisibility-inlines-hidden")
-endif()
-
-# Set the build directories
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/bin")
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/lib")
-
-#===============================================================================
-# 4. ADD SUB-TARGETS
-# Doing this at the end so that all definitions and link/include paths are
-# available for the sub-projects.
+# 2. ADD SUB-TARGETS
+# Doing this now so that we can add all common compilation settings to all
+# targets at once.
 #===============================================================================
 add_subdirectory(lib)
 add_subdirectory(tools)
 add_subdirectory(test)
 add_subdirectory(HelloWorld)
+
+#===============================================================================
+# 3. LLVM-TUTOR BUILD CONFIGURATION
+#===============================================================================
+# Convenience list for all of our targets, since they all get the same settings
+set(ALL_TARGETS
+  ${LLVM_TUTOR_PLUGINS} # ./lib
+  static # ./tools
+)
+
+foreach(target ${ALL_TARGETS})
+  # Use the same C++ standard as LLVM does
+  set_property(
+    TARGET ${target}
+    PROPERTY CXX_STANDARD 14
+  )
+
+  # Compiler flags
+  separate_arguments(llvm_def_list NATIVE_COMMAND "${LLVM_DEFINITIONS}")
+  target_compile_definitions(${target} PUBLIC ${llvm_def_list})
+
+  # LLVM is normally built without RTTI. Be consistent with that.
+  if(NOT LLVM_ENABLE_RTTI)
+    target_compile_options(${target} PUBLIC
+      # Replace with $<$<COMPILE_LANG_AND_ID:CXX,GNU,Clang,AppleClang>:...> if
+      # CMake version is bumped to 3.15+
+      $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CXX_COMPILER_ID:MSVC>>:/GR->
+      $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<NOT:$<CXX_COMPILER_ID:MSVC>>>:-fno-rtti>
+    )
+  endif()
+
+  # -fvisibility-inlines-hidden is set when building LLVM and on Darwin warnings
+  # are triggered if llvm-tutor is built without this flag (though otherwise it
+  # builds fine). For consistency, add it here too.
+  target_compile_options(${target} PUBLIC
+    # Replace with $<$<COMPILE_LANG_AND_ID:CXX,GNU,Clang,AppleClang>:...> if
+    # CMake version is bumped to 3.15+
+    $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<NOT:$<CXX_COMPILER_ID:MSVC>>>:-fvisibility-inlines-hidden>
+  )
+endforeach()
