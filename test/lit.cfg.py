@@ -56,6 +56,9 @@ llvm_config.add_tool_substitutions(tool_substitutions)
 tools = ["opt", "lli", "not", "FileCheck", "clang"]
 llvm_config.add_tool_substitutions(tools, config.llvm_tools_dir)
 
+# The LIT variable to hold the file extension for executable files (this is
+# platform dependent)
+config.substitutions.append(('%exeext', config.llvm_exe_ext))
 # The LIT variable to hold the file extension for shared libraries (this is
 # platform dependent)
 config.substitutions.append(('%shlibext', config.llvm_shlib_ext))

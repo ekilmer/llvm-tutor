@@ -1,4 +1,4 @@
-; RUN: %clang -S -emit-llvm %S/../inputs/input_for_mba.c -o - \
+; RUN: %clang -S -emit-llvm %S/../../inputs/input_for_mba.c -o - \
 ; RUN:   | opt --enable-new-pm=0 -load  %shlibdir/libMergeBB%shlibext -legacy-merge-bb -S -o %t.ll
 ; RUN: %clang %t.ll -o %t.bin
 

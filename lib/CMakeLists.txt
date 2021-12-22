@@ -1,5 +1,14 @@
 # THE LIST OF PLUGINS AND THE CORRESPONDING SOURCE FILES
 # ======================================================
+if(WIN32 OR CYGWIN)
+  message(WARNING "Building loadable pass modules on Windows is difficult/impossible.")
+  # See notes below on references concerning loadable LLVM pass modules
+  # Load LLVM's CMake macros and functions
+  # list(APPEND CMAKE_MODULE_PATH "${LLVM_CMAKE_DIR}")
+  # include(AddLLVM)
+  return()
+endif()
+
 set(LLVM_TUTOR_PLUGINS
     StaticCallCounter
     DynamicCallCounter
@@ -49,24 +58,21 @@ foreach( plugin ${LLVM_TUTOR_PLUGINS} )
   if(NOT (WIN32 OR CYGWIN))
     add_library(${plugin} SHARED ${${plugin}_SOURCES})
   else()
-    message(WARNING "Building loadable modules on Windows is difficult/impossible.")
+    # Building loadable modules on Windows is difficult/impossible.
     # See the following references:
     #  * https://reviews.llvm.org/D79771
     #  * https://reviews.llvm.org/D47082
     #  * https://reviews.llvm.org/D18826
     #  * https://llvm.discourse.group/t/how-to-create-pass-independently-on-windows/474
-    # Load LLVM's CMake macros and functions
-    list(APPEND CMAKE_MODULE_PATH "${LLVM_CMAKE_DIR}")
-    include(AddLLVM)
 
-    add_llvm_library(${plugin} MODULE BUILDTREE_ONLY
-      ${${plugin}_SOURCES}
+    # add_llvm_library(${plugin} MODULE BUILDTREE_ONLY
+    #   ${${plugin}_SOURCES}
 
-      DEPENDS
-        intrinsics_gen
-      PLUGIN_TOOL
-        opt
-    )
+    #   DEPENDS
+    #     intrinsics_gen
+    #   PLUGIN_TOOL
+    #     opt
+    # )
   endif()
 
   # Configure include directories for 'plugin'

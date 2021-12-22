@@ -1,4 +1,4 @@
-; RUN: ../bin/static %S/Inputs/CallCounterInput.ll 2>&1 | FileCheck %s
+; RUN: ../../bin/static%exeext %S/../Inputs/CallCounterInput.ll 2>&1 | FileCheck %s
 
 ; Test StaticCallCounter when run via static.
 

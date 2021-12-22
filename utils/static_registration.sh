@@ -11,7 +11,7 @@
 #     -DLLVM_BUILD_EXAMPLES=On -DLLVM_MBASUB_LINK_INTO_TOOLS=ON
 #
 #   Once opt is (re-)build, you can run MBASub like this:
-#     $LLVM_BUILD_DIR/bin/opt --passes=mba-sub -S $LLVM_TUTOR_DIR/test/MBA_sub.ll
+#     $LLVM_BUILD_DIR/bin/opt --passes=mba-sub -S $LLVM_TUTOR_DIR/test/passes/MBA_sub.ll
 #   Thanks to static regisration, you don't have to load the plugin with e.g.
 #   `-load`.
 #
@@ -73,7 +73,7 @@ copy_mbasub_into_llvm()
   # Copy the source and test files accross to llvm-project/llvm
   cp "$LLVM_TUTOR_DIR/lib/MBASub.cpp" "$LLVM_PASS_DIR"
   cp "$LLVM_TUTOR_DIR/include/MBASub.h" "$LLVM_PASS_DIR"
-  cp "$LLVM_TUTOR_DIR/test/MBA_sub.ll" "$llvm_pass_test_dir"
+  cp "$LLVM_TUTOR_DIR/test/passes/MBA_sub.ll" "$llvm_pass_test_dir"
 }
 
 # === add_cmake_for_mbasub =====================================================
