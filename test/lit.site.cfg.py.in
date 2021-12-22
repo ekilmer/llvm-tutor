@@ -2,6 +2,7 @@ import sys
 
 config.llvm_tools_dir = "@LLVM_TOOLS_BINARY_DIR@"
 config.llvm_exe_ext = "@LT_TEST_EXEEXT@"
+config.llvm_tutor_exe_dir = "@CMAKE_RUNTIME_OUTPUT_DIRECTORY@"
 config.llvm_shlib_ext = "@LT_TEST_SHLIBEXT@"
 config.llvm_shlib_dir = "@CMAKE_LIBRARY_OUTPUT_DIRECTORY@"
 

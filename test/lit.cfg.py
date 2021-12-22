@@ -11,7 +11,7 @@ from lit.llvm.subst import ToolSubst
 
 # name: The name of this test suite.
 # (config is an instance of TestingConfig created when discovering tests)
-config.name = 'LLVM-TUTOR'
+config.name = 'LLVM_TUTOR'
 
 # testFormat: The test format to use to interpret tests.
 # As per shtest.py (my formatting):
@@ -59,6 +59,8 @@ llvm_config.add_tool_substitutions(tools, config.llvm_tools_dir)
 # The LIT variable to hold the file extension for executable files (this is
 # platform dependent)
 config.substitutions.append(('%exeext', config.llvm_exe_ext))
+# The LIT variable to hold the location of executable tools
+config.substitutions.append(('%exedir', config.llvm_tutor_exe_dir))
 # The LIT variable to hold the file extension for shared libraries (this is
 # platform dependent)
 config.substitutions.append(('%shlibext', config.llvm_shlib_ext))
