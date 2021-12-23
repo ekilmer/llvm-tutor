@@ -3,15 +3,6 @@ project(llvm-tutor CXX)
 include(GNUInstallDirs)
 
 # Global CMake Project configuration(s)
-# Require standard C++14, which is the same as LLVM
-if(NOT CMAKE_CXX_STANDARD)
-  set(CMAKE_CXX_STANDARD 14)
-  set(CMAKE_CXX_STANDARD_REQUIRED ON)
-  set(CMAKE_CXX_EXTENSIONS OFF)
-elseif(CMAKE_CXX_STANDARD LESS 14)
-  message(FATAL_ERROR "LLVM Tutor requires C++14 or newer")
-endif()
-
 # Place all binary and library artifacts in a consistent location for lit testing
 if(NOT CMAKE_RUNTIME_OUTPUT_DIRECTORY)
   set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_INSTALL_BINDIR})

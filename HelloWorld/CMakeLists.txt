@@ -2,16 +2,6 @@ cmake_minimum_required(VERSION 3.13.4)
 project(llvm-tutor-hello-world CXX)
 include(GNUInstallDirs)
 
-# Require at least standard C++14
-# (also remember to change the standard on the targets near the end of this file)
-if(NOT CMAKE_CXX_STANDARD)
-  set(CMAKE_CXX_STANDARD 14)
-  set(CMAKE_CXX_STANDARD_REQUIRED ON)
-  set(CMAKE_CXX_EXTENSIONS OFF)
-elseif(CMAKE_CXX_STANDARD LESS 14)
-  message(FATAL_ERROR "LLVM Tutor HelloWorld requires C++14 or newer")
-endif()
-
 #===============================================================================
 # 1. LOAD LLVM CONFIGURATION
 #===============================================================================
