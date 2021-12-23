@@ -59,7 +59,7 @@ target_include_directories(HelloWorld SYSTEM PUBLIC
 #===============================================================================
 # 3. LLVM-TUTOR BUILD CONFIGURATION
 #===============================================================================
-# Use the same C++ standard as LLVM does
+# Use at least C++14 standard because LLVM requires it
 target_compile_features(HelloWorld PUBLIC cxx_std_14)
 
 # Allow undefined symbols in shared objects on Darwin (this is the default

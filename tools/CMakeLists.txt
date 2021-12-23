@@ -11,6 +11,7 @@ target_link_libraries(static PUBLIC
   LLVMSupport
 )
 
+# Use at least C++14 standard because LLVM requires it
 target_compile_features(static PRIVATE cxx_std_14)
 
 # Setup the include directories

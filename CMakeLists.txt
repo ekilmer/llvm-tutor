@@ -57,7 +57,7 @@ set(ALL_TARGETS
 )
 
 foreach(target ${ALL_TARGETS})
-  # Use the same C++ standard as LLVM does
+  # Use at least C++14 standard because LLVM requires it
   target_compile_features(${target} PUBLIC cxx_std_14)
 
   # Compiler flags
