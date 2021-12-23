@@ -1,7 +1,7 @@
-; RUN: opt -load-pass-plugin %shlibdir/libOpcodeCounter%shlibext --passes='default<O1>' -debug-pass-manager  %s -o /dev/null 2>&1 | FileCheck --check-prefixes=CHECK-O1 %s
-; RUN: opt -load-pass-plugin %shlibdir/libOpcodeCounter%shlibext --passes='default<O2>' -debug-pass-manager  %s -o /dev/null 2>&1 | FileCheck --check-prefixes=CHECK-O2 %s
-; RUN: opt -load-pass-plugin %shlibdir/libOpcodeCounter%shlibext --passes='default<O3>' -debug-pass-manager  %s -o /dev/null 2>&1 | FileCheck --check-prefixes=CHECK-O3 %s
-; RUN: opt -load-pass-plugin %shlibdir/libOpcodeCounter%shlibext --passes='default<Os>' -debug-pass-manager  %s -o /dev/null 2>&1 | FileCheck --check-prefixes=CHECK-Os %s
+; RUN: opt -load-pass-plugin %shlibdir/OpcodeCounter%shlibext --passes='default<O1>' -debug-pass-manager  %s -o /dev/null 2>&1 | FileCheck --check-prefixes=CHECK-O1 %s
+; RUN: opt -load-pass-plugin %shlibdir/OpcodeCounter%shlibext --passes='default<O2>' -debug-pass-manager  %s -o /dev/null 2>&1 | FileCheck --check-prefixes=CHECK-O2 %s
+; RUN: opt -load-pass-plugin %shlibdir/OpcodeCounter%shlibext --passes='default<O3>' -debug-pass-manager  %s -o /dev/null 2>&1 | FileCheck --check-prefixes=CHECK-O3 %s
+; RUN: opt -load-pass-plugin %shlibdir/OpcodeCounter%shlibext --passes='default<Os>' -debug-pass-manager  %s -o /dev/null 2>&1 | FileCheck --check-prefixes=CHECK-Os %s
 
 ; Verify that OpcodeCounter is run when an optimisation level is specified
 ; (e.g. -O1 or -O3). Note that contrary to other tests, there's no explicit

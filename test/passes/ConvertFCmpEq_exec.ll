@@ -3,7 +3,7 @@
 
 ; After the transformation, `a == b` is replaced with `a - b < eps`, which is
 ; going to be true for floating point numbers.
-; RUN: opt --load-pass-plugin=%shlibdir/libFindFCmpEq%shlibext \
-; RUN:   --load-pass-plugin=%shlibdir/libConvertFCmpEq%shlibext \
+; RUN: opt --load-pass-plugin=%shlibdir/FindFCmpEq%shlibext \
+; RUN:   --load-pass-plugin=%shlibdir/ConvertFCmpEq%shlibext \
 ; RUN:   --passes="convert-fcmp-eq" -S %S/../Inputs/FCmpEqInput.ll -o %t.bin
 ; RUN: not lli %t.bin

@@ -1,5 +1,5 @@
-; RUN:  opt --enable-new-pm=0 -load %shlibdir/libFindFCmpEq%shlibext -find-fcmp-eq -analyze %s | FileCheck %s
-; RUN:  opt --load-pass-plugin=%shlibdir/libFindFCmpEq%shlibext --passes="print<find-fcmp-eq>" -disable-output %s | FileCheck -allow-empty %s
+; RUN:  opt --enable-new-pm=0 -load %shlibdir/FindFCmpEq%shlibext -find-fcmp-eq -analyze %s | FileCheck %s
+; RUN:  opt --load-pass-plugin=%shlibdir/FindFCmpEq%shlibext --passes="print<find-fcmp-eq>" -disable-output %s | FileCheck -allow-empty %s
 
 define i32 @fcmp_oeq(double %a, double %b) {
 ; CHECK-NOT: Floating-point equality comparisons in fcmp_oeq

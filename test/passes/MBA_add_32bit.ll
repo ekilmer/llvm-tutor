@@ -1,6 +1,6 @@
-; RUN: opt --enable-new-pm=0 -load %shlibdir/libMBAAdd%shlibext -legacy-mba-add -S %s \
+; RUN: opt --enable-new-pm=0 -load %shlibdir/MBAAdd%shlibext -legacy-mba-add -S %s \
 ; RUN:  | FileCheck %s
-; RUN: opt -load-pass-plugin=%shlibdir/libMBAAdd%shlibext -passes="mba-add" -S %s \
+; RUN: opt -load-pass-plugin=%shlibdir/MBAAdd%shlibext -passes="mba-add" -S %s \
 ; RUN:  | FileCheck %s
 
 define signext i32 @foo(i32 signext, i32 signext, i32 signext, i32 signext) {

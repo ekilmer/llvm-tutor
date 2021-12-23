@@ -1,5 +1,5 @@
-; RUN: opt --enable-new-pm=0 -load %shlibdir/libRIV%shlibext -legacy-riv -analyze %s  | FileCheck %s
-; RUN:  opt -load-pass-plugin %shlibdir/libRIV%shlibext -passes="print<riv>" -disable-output %s 2>&1 | FileCheck %s
+; RUN: opt --enable-new-pm=0 -load %shlibdir/RIV%shlibext -legacy-riv -analyze %s  | FileCheck %s
+; RUN:  opt -load-pass-plugin %shlibdir/RIV%shlibext -passes="print<riv>" -disable-output %s 2>&1 | FileCheck %s
 
 ; Verifies that the result from the RIV pass for the following module is
 ; correct. Note that most values are floats. These values should be ignored by

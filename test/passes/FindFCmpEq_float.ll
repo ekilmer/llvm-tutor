@@ -1,5 +1,5 @@
-; RUN:  opt --enable-new-pm=0 -load %shlibdir/libFindFCmpEq%shlibext -find-fcmp-eq -analyze %S/../Inputs/FCmpEqInput.ll  | FileCheck %s
-; RUN:  opt --load-pass-plugin=%shlibdir/libFindFCmpEq%shlibext --passes="print<find-fcmp-eq>" %S/../Inputs/FCmpEqInput.ll  | FileCheck %s
+; RUN:  opt --enable-new-pm=0 -load %shlibdir/FindFCmpEq%shlibext -find-fcmp-eq -analyze %S/../Inputs/FCmpEqInput.ll  | FileCheck %s
+; RUN:  opt --load-pass-plugin=%shlibdir/FindFCmpEq%shlibext --passes="print<find-fcmp-eq>" %S/../Inputs/FCmpEqInput.ll  | FileCheck %s
 
 ; Verify that FindFCmpEq correctly finds floating point comparison operations
 ; in a slightly more complex example (e.g. with function calls)

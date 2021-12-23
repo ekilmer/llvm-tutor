@@ -1,6 +1,6 @@
-; RUN:  opt --enable-new-pm=0 -load %shlibdir/libHelloWorld%shlibext --legacy-hello-world -disable-output 2>&1 %s\
+; RUN:  opt --enable-new-pm=0 -load %shlibdir/HelloWorld%shlibext --legacy-hello-world -disable-output 2>&1 %s\
 ; RUN:   | FileCheck %s
-; RUN:  opt -load-pass-plugin  %shlibdir/libHelloWorld%shlibext -passes=hello-world -disable-output 2>&1 %s\
+; RUN:  opt -load-pass-plugin  %shlibdir/HelloWorld%shlibext -passes=hello-world -disable-output 2>&1 %s\
 ; RUN:   | FileCheck %s
 
 ; Test 'hello-world' when run through opt (both new and legacy PMs)

@@ -1,5 +1,5 @@
-; RUN: opt --enable-new-pm=0 -load %shlibdir/libMergeBB%shlibext -legacy-merge-bb -S %s | FileCheck  %s
-; RUN: opt -load-pass-plugin %shlibdir/libMergeBB%shlibext -passes=merge-bb -S %s | FileCheck  %s
+; RUN: opt --enable-new-pm=0 -load %shlibdir/MergeBB%shlibext -legacy-merge-bb -S %s | FileCheck  %s
+; RUN: opt -load-pass-plugin %shlibdir/MergeBB%shlibext -passes=merge-bb -S %s | FileCheck  %s
 
 define i32 @main(i32) {
   switch i32 %0, label %4 [

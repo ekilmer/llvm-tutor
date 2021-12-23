@@ -2,10 +2,12 @@
 # ======================================================
 if(WIN32 OR CYGWIN)
   message(WARNING "Building loadable pass modules on Windows is difficult/impossible.")
-  # See notes below on references concerning loadable LLVM pass modules
-  # Load LLVM's CMake macros and functions
-  # list(APPEND CMAKE_MODULE_PATH "${LLVM_CMAKE_DIR}")
-  # include(AddLLVM)
+  # Building loadable modules on Windows is difficult/impossible.
+  # See the following references:
+  #  * https://reviews.llvm.org/D79771
+  #  * https://reviews.llvm.org/D47082
+  #  * https://reviews.llvm.org/D18826
+  #  * https://llvm.discourse.group/t/how-to-create-pass-independently-on-windows/474
   return()
 endif()
 
@@ -21,10 +23,7 @@ set(LLVM_TUTOR_PLUGINS
     DuplicateBB
     OpcodeCounter
     MergeBB
-    )
-# Set in parent scope also for adding project-wide settings to all of these
-# targets. Convenience variable
-set(LLVM_TUTOR_PLUGINS ${LLVM_TUTOR_PLUGINS} PARENT_SCOPE)
+)
 
 set(StaticCallCounter_SOURCES
   StaticCallCounter.cpp)
@@ -53,51 +52,40 @@ set(MergeBB_SOURCES
 
 # CONFIGURE THE PLUGIN LIBRARIES
 # ==============================
-foreach( plugin ${LLVM_TUTOR_PLUGINS} )
-  # Create a library corresponding to 'plugin'
-  if(NOT (WIN32 OR CYGWIN))
-    add_library(${plugin} SHARED ${${plugin}_SOURCES})
-  else()
-    # Building loadable modules on Windows is difficult/impossible.
-    # See the following references:
-    #  * https://reviews.llvm.org/D79771
-    #  * https://reviews.llvm.org/D47082
-    #  * https://reviews.llvm.org/D18826
-    #  * https://llvm.discourse.group/t/how-to-create-pass-independently-on-windows/474
+foreach(plugin ${LLVM_TUTOR_PLUGINS})
+  set(pass "${plugin}Pass")
+  # Create a module corresponding to 'plugin'
+  add_library(${pass} MODULE ${${plugin}_SOURCES})
+  # Set the name back to the plugin name
+  set_target_properties(${pass} PROPERTIES OUTPUT_NAME ${plugin})
 
-    # add_llvm_library(${plugin} MODULE BUILDTREE_ONLY
-    #   ${${plugin}_SOURCES}
-
-    #   DEPENDS
-    #     intrinsics_gen
-    #   PLUGIN_TOOL
-    #     opt
-    # )
-  endif()
+    # Use at least C++14 standard because LLVM requires it
+  target_compile_features(${pass} PRIVATE cxx_std_14)
 
   # Configure include directories for 'plugin'
   # plugin specific include directory
-  target_include_directories(${plugin} PRIVATE
-    "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include>"
-  )
-  # LLVM include directories
-  target_include_directories(${plugin} SYSTEM PUBLIC
-    "$<BUILD_INTERFACE:${LLVM_INCLUDE_DIRS}>"
+  target_include_directories(${pass} PRIVATE
+    "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>"
   )
 
-  # On Darwin (unlike on Linux), undefined symbols in shared objects are not
-  # allowed at the end of the link-edit. The plugins defined here:
-  #  - _are_ shared objects
-  #  - reference symbols from LLVM shared libraries, i.e. symbols which are
-  #    undefined until those shared objects are loaded in memory (and hence
-  #    _undefined_ during static linking)
-  # The build will fail with errors like this:
-  #    "Undefined symbols for architecture x86_64"
-  # with various LLVM symbols being undefined. Since those symbols are later
-  # loaded and resolved at runtime, these errors are false positives.
-  # This behaviour can be modified via the '-undefined' OS X linker flag as
-  # follows.
-  target_link_options(${plugin} PUBLIC
-    $<$<PLATFORM_ID:Darwin>:-undefined dynamic_lookup>
-  )
+  # Fixup everything else required to build with LLVM
+  fix_llvm_compilation_settings("${pass}")
+
+  # We also create a standalone tool for this pass, so we need a usable library
+  if("${plugin}" STREQUAL "StaticCallCounter")
+    # We create only a static library for now
+    add_library(${plugin} STATIC ${${plugin}_SOURCES})
+    # Link to the required LLVM static libraries
+    target_link_libraries(${plugin} PUBLIC
+      LLVMCore
+      LLVMPasses
+      LLVMIRReader
+      LLVMSupport
+    )
+    target_compile_features(${plugin} PUBLIC cxx_std_14)
+    target_include_directories(${plugin} PUBLIC
+      "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>"
+    )
+    fix_llvm_compilation_settings("${plugin}")
+  endif()
 endforeach()

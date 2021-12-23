@@ -21,7 +21,7 @@ define signext i8 @foo(i8 signext, i8 signext, i8 signext, i8 signext) {
 ; Verify that all instructions except for the return statement are eliminated
 ; (they are `dead`)
 ; Generated from dce_basic_add.ll with:
-;     opt --load-pass-plugin lib/libMBAAdd.dylib --passes=mba-add -S dce_basic_add.ll
+;     opt --load-pass-plugin lib/MBAAdd.dylib --passes=mba-add -S dce_basic_add.ll
 define signext i8 @foo_v2(i8 signext %0, i8 signext %1, i8 signext %2, i8 signext %3) {
 ; CHECK-LABEL: foo_v2
 ; CHECK-NEXT: ret i8 123

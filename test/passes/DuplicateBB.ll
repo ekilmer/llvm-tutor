@@ -1,5 +1,5 @@
-; RUN: opt --enable-new-pm=0 -load %shlibdir/libRIV%shlibext -load %shlibdir/libDuplicateBB%shlibext -legacy-duplicate-bb -S %s | FileCheck  %s
-; RUN: opt -load-pass-plugin %shlibdir/libRIV%shlibext -load-pass-plugin %shlibdir/libDuplicateBB%shlibext -passes=duplicate-bb -S %s | FileCheck  %s
+; RUN: opt --enable-new-pm=0 -load %shlibdir/RIV%shlibext -load %shlibdir/DuplicateBB%shlibext -legacy-duplicate-bb -S %s | FileCheck  %s
+; RUN: opt -load-pass-plugin %shlibdir/RIV%shlibext -load-pass-plugin %shlibdir/DuplicateBB%shlibext -passes=duplicate-bb -S %s | FileCheck  %s
 
 ; Verify that indeed the only BasicBlock in foo is duplcated. It's a trivial
 ; BasicBlock with only one terminator instruction (terminator instructions are
