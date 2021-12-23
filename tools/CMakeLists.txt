@@ -11,6 +11,8 @@ target_link_libraries(static PUBLIC
   LLVMSupport
 )
 
+target_compile_features(static PRIVATE cxx_std_14)
+
 # Setup the include directories
 target_include_directories(static PUBLIC
   "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include>"

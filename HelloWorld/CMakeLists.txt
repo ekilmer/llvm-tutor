@@ -70,12 +70,7 @@ target_include_directories(HelloWorld SYSTEM PUBLIC
 # 3. LLVM-TUTOR BUILD CONFIGURATION
 #===============================================================================
 # Use the same C++ standard as LLVM does
-set_property(
-  TARGET
-    HelloWorld
-  PROPERTY
-    CXX_STANDARD 14
-)
+target_compile_features(HelloWorld PUBLIC cxx_std_14)
 
 # Allow undefined symbols in shared objects on Darwin (this is the default
 # behaviour on Linux)

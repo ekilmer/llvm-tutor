@@ -67,10 +67,7 @@ set(ALL_TARGETS
 
 foreach(target ${ALL_TARGETS})
   # Use the same C++ standard as LLVM does
-  set_property(
-    TARGET ${target}
-    PROPERTY CXX_STANDARD 14
-  )
+  target_compile_features(${target} PUBLIC cxx_std_14)
 
   # Compiler flags
   separate_arguments(llvm_def_list NATIVE_COMMAND "${LLVM_DEFINITIONS}")
